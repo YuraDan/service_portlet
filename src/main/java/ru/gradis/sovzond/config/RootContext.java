@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import ru.gradis.sovzond.model.dao.ConfigDAO;
 import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
-import ru.gradis.sovzond.model.dao.impl.ConfigDAOImpl;
+import ru.gradis.sovzond.model.dao.ConfigDAO;
 import ru.gradis.sovzond.model.dao.impl.CRUDServiceDAOImpl;
+import ru.gradis.sovzond.model.dao.impl.ConfigDAOImpl;
 
 import javax.sql.DataSource;
 
@@ -30,15 +30,14 @@ public class RootContext extends WebMvcConfigurerAdapter {
 		dataSource.setUrl("jdbc:postgresql://192.168.42.21:5432/mo");
 		dataSource.setUsername("rc7postgres");
 		dataSource.setPassword("9PmAPWXHefUn");
-
 		return dataSource;
 	}
+
 
 	@Bean
 	public ConfigDAO configDAO() {
 		return new ConfigDAOImpl(getDataSource());
 	}
-
 
 	@Bean
 	public CRUDServiceDAO crudServiceDAO() {

@@ -52,7 +52,6 @@ public class CRUDController {
 	ResponseEntity<String> delete(@RequestParam("dataSetName") String dataSetName,
 	                              @RequestParam("userId") Integer userId,
 	                              @RequestParam(value = "param", required = false) String param) {
-		String json = "";
 
 		if (dataSetName != null && userId != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, dataSetName, userId, param);
@@ -68,7 +67,6 @@ public class CRUDController {
 	ResponseEntity<String> update(@RequestParam("dataSetName") String dataSetName,
 	                              @RequestParam("userId") Integer userId,
 	                              @RequestParam(value = "param", required = false) String param) {
-		String json = "";
 
 		if (dataSetName != null && userId != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, dataSetName, userId, param);

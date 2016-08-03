@@ -24,6 +24,7 @@ public class ConfigDAOImpl implements ConfigDAO {
 	private SimpleJdbcCall simpleJdbcCall;
 
 	public ConfigDAOImpl(DataSource dataSource) {
+
 		this.simpleJdbcCall = new SimpleJdbcCall(dataSource).withSchemaName("config").
 				withProcedureName("pr_get_json_portlet").
 				declareParameters(

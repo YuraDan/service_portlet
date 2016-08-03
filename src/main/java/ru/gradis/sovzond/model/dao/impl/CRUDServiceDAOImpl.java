@@ -17,8 +17,6 @@ import java.util.Map;
  */
 
 public class CRUDServiceDAOImpl implements CRUDServiceDAO {
-
-
 	private static final Log log = LogFactoryUtil.getLog(CRUDServiceDAOImpl.class);
 
 	private DataSource dataSource;
