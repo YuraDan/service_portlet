@@ -27,8 +27,23 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 
 	@Override
 	public Map<String, Object> executeDataAction(Action action, String dataSetName, Integer userId, String param) {
-		SimpleJdbcCall simpleJdbcCall = null;
 
+		Map<String, Object> inParamMap = new HashMap<String, Object>();
+		inParamMap.put("i_dataset_name", dataSetName);
+		inParamMap.put("i_dataset_id", null);
+		inParamMap.put("i_params", param);
+		inParamMap.put("i_user_id", userId);
+		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
+
+		Map<String, Object> simpleJdbcCallResult = getJdbcCallByAction(action).execute(in);
+		log.info(simpleJdbcCallResult);
+
+		return simpleJdbcCallResult;
+
+	}
+
+	private SimpleJdbcCall getJdbcCallByAction(Action action) {
+		SimpleJdbcCall simpleJdbcCall = null;
 		switch (action) {
 			case INSERT:
 				simpleJdbcCall = initCrudProc(dataSource, "config", "pr_insert_json_data");
@@ -43,19 +58,7 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 				simpleJdbcCall = initCrudProc(dataSource, "config", "pr_get_json_data");
 				break;
 		}
-
-		Map<String, Object> inParamMap = new HashMap<String, Object>();
-		inParamMap.put("i_dataset_name", dataSetName);
-		inParamMap.put("i_dataset_id", null);
-		inParamMap.put("i_params", param);
-		inParamMap.put("i_user_id", userId);
-		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
-
-		Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
-		log.info(simpleJdbcCallResult);
-
-		return simpleJdbcCallResult;
-
+		return simpleJdbcCall;
 	}
 
 	private SimpleJdbcCall initCrudProc(DataSource dataSource, String schema, String procName) {
