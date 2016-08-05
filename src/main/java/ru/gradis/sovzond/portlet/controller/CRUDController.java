@@ -31,17 +31,15 @@ public class CRUDController {
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
-	ResponseEntity<String> getData(@RequestParam("dataSetName") String dataSetName,
-	                               @RequestParam("userId") Integer userId,
-	                               @RequestParam(value = "param", required = false) String param) {
+	ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param) {
 		String json = "";
 
-		if (dataSetName != null && userId != null) {
-			json = (String) crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.GET, dataSetName, userId, param).get("r_json").toString();
+		if (param != null) {
+			json = (String) crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.GET, param).get("r_json").toString();
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<String>("Требуется передать userId, название набора данных и управляющие параметры!", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 
 	}
 
@@ -49,31 +47,27 @@ public class CRUDController {
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
-	ResponseEntity<String> delete(@RequestParam("dataSetName") String dataSetName,
-	                              @RequestParam("userId") Integer userId,
-	                              @RequestParam(value = "param", required = false) String param) {
+	ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param) {
 
-		if (dataSetName != null && userId != null) {
-			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, dataSetName, userId, param);
+		if (param != null) {
+			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param);
 			return new ResponseEntity<String>("Удалено", HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Требуется передать userId, название набора данных и управляющие параметры!", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 	}
 
 	@RequestMapping(value = "/Services/updateData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
-	ResponseEntity<String> update(@RequestParam("dataSetName") String dataSetName,
-	                              @RequestParam("userId") Integer userId,
-	                              @RequestParam(value = "param", required = false) String param) {
+	ResponseEntity<String> update(@RequestParam(value = "param", required = true) String param) {
 
-		if (dataSetName != null && userId != null) {
-			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, dataSetName, userId, param);
+		if (param != null) {
+			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
 			return new ResponseEntity<String>("Обновлено", HttpStatus.OK);
 		}
 
-		return new ResponseEntity<String>("Требуется передать userId, название набора данных и управляющие параметры!", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 
 	}
 
@@ -81,19 +75,17 @@ public class CRUDController {
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
-	ResponseEntity<String> insert(@RequestParam("dataSetName") String dataSetName,
-	                              @RequestParam("userId") Integer userId,
-	                              @RequestParam(value = "param", required = false) String param) {
+	ResponseEntity<String> insert(@RequestParam(value = "param", required = true) String param) {
 		String json = "";
 
-		if (dataSetName != null && userId != null) {
-			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, dataSetName, userId, param);
+		if (param != null) {
+			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param);
 
 			json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":", result.get("guid").toString(), "}");
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
-		return new ResponseEntity<String>("Требуется передать userId, название набора данных и управляющие параметры!", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 
 	}
 

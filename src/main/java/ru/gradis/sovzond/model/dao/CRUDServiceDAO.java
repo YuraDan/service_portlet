@@ -11,7 +11,7 @@ public interface CRUDServiceDAO {
 
 	public enum Action {GET, INSERT, UPDATE, DELETE}
 
-	public Map<String, Object> executeDataAction(Action action, String dataSetName, Integer userId, String param);
+	public Map<String, Object> executeDataAction(Action action, String param);
 
 
 }

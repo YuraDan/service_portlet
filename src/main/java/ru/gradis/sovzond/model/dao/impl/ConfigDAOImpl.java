@@ -35,11 +35,9 @@ public class ConfigDAOImpl implements ConfigDAO {
 	}
 
 	@Override
-	public String getConfig(String portletId, Integer userId, Integer plId) {
+	public String getConfig(String param) {
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
-		inParamMap.put("i_layout_id", plId);
-		inParamMap.put("i_portlet_id", portletId);
-		inParamMap.put("i_user_id", userId);
+		inParamMap.put("i_param", param);
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
 		Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
 		log.info(simpleJdbcCallResult);

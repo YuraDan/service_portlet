@@ -25,16 +25,13 @@ public class ConfigController {
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
-	ResponseEntity<String> getConfig(@RequestParam("portletId") String portletId,
-	                                 @RequestParam("userId") Integer userId,
-	                                 @RequestParam("plId") Integer plId
-	) {
+	ResponseEntity<String> getConfig(@RequestParam("param") String param) {
 		String json = "";
 
-		if (portletId == null || userId == null || plId == null) {
+		if (param == null) {
 			return new ResponseEntity<String>("Заданы не все параметры!", HttpStatus.BAD_REQUEST);
 		} else {
-			json = (String) configDAO.getConfig(portletId, userId, plId);
+			json = (String) configDAO.getConfig(param);
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
