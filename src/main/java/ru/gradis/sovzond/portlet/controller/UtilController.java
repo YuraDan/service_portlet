@@ -22,7 +22,7 @@ public class UtilController {
 
 	private static final Log log = LogFactoryUtil.getLog(UtilController.class);
 
-	@RequestMapping(value = "/Services/getPortraitId", method = RequestMethod.GET)
+	@RequestMapping(value = "/Services/getPortraitUrl", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	public
 	@ResponseBody
