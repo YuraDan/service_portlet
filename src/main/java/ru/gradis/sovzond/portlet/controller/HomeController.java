@@ -21,8 +21,6 @@ public class HomeController {
 
 	@RequestMapping("EDIT")
 	public ModelAndView home(Locale locale, ModelAndView model) throws IOException {
-		CacheRegistryUtil.clear();
-
 		log.info("Welcome from SERVICE_PORTLET! The client locale is " + locale.toString());
 		model.setViewName("home");
 		return model;

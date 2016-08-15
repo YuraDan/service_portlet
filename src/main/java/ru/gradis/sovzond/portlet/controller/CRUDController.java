@@ -51,7 +51,7 @@ public class CRUDController {
 
 		if (param != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param);
-			return new ResponseEntity<String>("Удалено", HttpStatus.OK);
+			return new ResponseEntity<String>("{\"message\":\"Удалено\"", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 	}
@@ -64,7 +64,7 @@ public class CRUDController {
 
 		if (param != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
-			return new ResponseEntity<String>("Обновлено", HttpStatus.OK);
+			return new ResponseEntity<String>("{\"message\":\"Обновлено\"}", HttpStatus.OK);
 		}
 
 		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
@@ -80,8 +80,11 @@ public class CRUDController {
 
 		if (param != null) {
 			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param);
-
-			json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":", result.get("guid").toString(), "}");
+			if (result.get("guid") != null) {
+				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":", result.get("guid").toString(), "}");
+			} else {
+				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), "}");
+			}
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
