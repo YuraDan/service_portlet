@@ -81,7 +81,7 @@ public class CRUDController {
 		if (param != null) {
 			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param);
 			if (result.get("guid") != null) {
-				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":", result.get("guid").toString(), "}");
+				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
 			} else {
 				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), "}");
 			}
