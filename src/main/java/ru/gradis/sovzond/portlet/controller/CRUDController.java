@@ -85,6 +85,7 @@ public class CRUDController {
 			} else {
 				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), "}");
 			}
+			System.out.println("json = " + json);
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
