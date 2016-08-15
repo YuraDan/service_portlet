@@ -17,7 +17,9 @@ public class CommonUtil {
 
 	public static String concatStrings(String... strings) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(strings);
+		for (String s : strings) {
+			sb.append(s);
+		}
 		return sb.toString();
 	}
 
