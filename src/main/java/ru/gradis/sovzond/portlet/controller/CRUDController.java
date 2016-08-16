@@ -47,7 +47,7 @@ public class CRUDController {
 
 		if (param != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param);
-			return new ResponseEntity<String>("{\"message\":\"Удалено\"", HttpStatus.OK);
+			return new ResponseEntity<String>("{\"message\":\"Удалено\"}", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 	}
