@@ -24,9 +24,7 @@ public class LoginController {
 
 	@RequestMapping(value = "/Services/loginInit", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> getConfig(@RequestParam("userId") String userId) {
+	public ResponseEntity<String> getConfig(@RequestParam("userId") String userId) {
 		if (userId == null) {
 			return new ResponseEntity<String>("Заданы не все параметры!", HttpStatus.BAD_REQUEST);
 		} else {

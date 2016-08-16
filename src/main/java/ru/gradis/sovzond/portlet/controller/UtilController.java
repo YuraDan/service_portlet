@@ -23,9 +23,7 @@ public class UtilController {
 
 	@RequestMapping(value = "/Services/getPortraitUrl", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> getConfig(@RequestParam("userId") Integer userId, @RequestParam("imagePath") String imagePath) {
+	public ResponseEntity<String> getPortraitUrl(@RequestParam("userId") Integer userId, @RequestParam("imagePath") String imagePath) {
 		String url = "UNDEF";
 		try {
 			User user = UserLocalServiceUtil.getUserById(userId);

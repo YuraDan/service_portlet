@@ -29,9 +29,7 @@ public class CRUDController {
 
 	@RequestMapping(value = "/Services/getData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param) {
+	public ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param) {
 		String json = "";
 
 		if (param != null) {
@@ -45,9 +43,7 @@ public class CRUDController {
 
 	@RequestMapping(value = "/Services/deleteData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param) {
+	public ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param) {
 
 		if (param != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param);
@@ -58,9 +54,7 @@ public class CRUDController {
 
 	@RequestMapping(value = "/Services/updateData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> update(@RequestParam(value = "param", required = true) String param) {
+	public ResponseEntity<String> update(@RequestParam(value = "param", required = true) String param) {
 
 		if (param != null) {
 			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
@@ -73,9 +67,7 @@ public class CRUDController {
 
 	@RequestMapping(value = "/Services/insertData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> insert(@RequestParam(value = "param", required = true) String param) {
+	public ResponseEntity<String> insert(@RequestParam(value = "param", required = true) String param) {
 		String json = "";
 
 		if (param != null) {

@@ -23,9 +23,7 @@ public class ConfigController {
 
 	@RequestMapping(value = "/Services/getConfig", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public
-	@ResponseBody
-	ResponseEntity<String> getConfig(@RequestParam("param") String param) {
+	public ResponseEntity<String> getConfig(@RequestParam("param") String param) {
 		String json = "";
 
 		if (param == null) {
