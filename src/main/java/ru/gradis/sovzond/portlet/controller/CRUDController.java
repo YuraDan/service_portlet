@@ -60,9 +60,9 @@ public class CRUDController {
 		if (param != null) {
 			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
 			if (result.get("guid") != null) {
-				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\"", "\"id\":", result.get("r_id").toString(), ",", "\"guid\":\"", result.get("r_guid").toString(), "\"", "}");
+				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\"", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
 			} else {
-				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\"", "\"id\":", result.get("r_id").toString(), "}");
+				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\"", "\"id\":", result.get("id").toString(), "}");
 			}
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
@@ -79,9 +79,9 @@ public class CRUDController {
 		if (param != null) {
 			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param);
 			if (result.get("guid") != null) {
-				json = CommonUtil.concatStrings("{", "\"id\":", result.get("r_id").toString(), ",", "\"guid\":\"", result.get("r_guid").toString(), "\"", "}");
+				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
 			} else {
-				json = CommonUtil.concatStrings("{", "\"id\":", result.get("r_id").toString(), "}");
+				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), "}");
 			}
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
