@@ -32,7 +32,7 @@ public class LoginDAOImpl implements LoginDAO {
 		this.simpleJdbcCall = new SimpleJdbcCall(dataSource).withSchemaName("public").
 				withProcedureName("PR_INIT").
 				declareParameters(
-						new SqlParameter("i_user_id", Types.BIGINT)
+						new SqlParameter("user_id", Types.BIGINT)
 				);
 	}
 
@@ -40,7 +40,7 @@ public class LoginDAOImpl implements LoginDAO {
 	public void userInit(String userId) {
 
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
-		inParamMap.put("i_user_id", Integer.valueOf(userId));
+		inParamMap.put("user_id", Integer.valueOf(userId));
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
 		Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
 		log.info(simpleJdbcCallResult);

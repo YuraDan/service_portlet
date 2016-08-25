@@ -29,7 +29,7 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 	public Map<String, Object> executeDataAction(Action action, String param) {
 
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
-		inParamMap.put("i_params", param);
+		inParamMap.put("params", param);
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
 
 		Map<String, Object> simpleJdbcCallResult = getJdbcCallByAction(action).execute(in);
@@ -62,7 +62,7 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 		return new SimpleJdbcCall(dataSource).withSchemaName(schema).
 				withProcedureName(procName).
 				declareParameters(
-						new SqlParameter("i_params", Types.CLOB)
+						new SqlParameter("params", Types.CLOB)
 				);
 	}
 

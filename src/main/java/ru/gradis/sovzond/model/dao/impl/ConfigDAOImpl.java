@@ -28,14 +28,14 @@ public class ConfigDAOImpl implements ConfigDAO {
 		this.simpleJdbcCall = new SimpleJdbcCall(dataSource).withSchemaName("config").
 				withProcedureName("pr_get_json_portlet").
 				declareParameters(
-						new SqlParameter("i_params", Types.CLOB)
+						new SqlParameter("params", Types.CLOB)
 				);
 	}
 
 	@Override
 	public String getConfig(String param) {
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
-		inParamMap.put("i_params", param);
+		inParamMap.put("params", param);
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
 		Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
 		log.info(simpleJdbcCallResult);
