@@ -44,10 +44,10 @@ public class CRUDController {
 	@RequestMapping(value = "/Services/deleteData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param) {
-
+		String json = "";
 		if (param != null) {
-			crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param);
-			return new ResponseEntity<String>("{\"message\":\"Удалено\"}", HttpStatus.OK);
+			json = (String) crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, param).get("r_json").toString();
+			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
 	}
@@ -58,12 +58,13 @@ public class CRUDController {
 		String json = "";
 
 		if (param != null) {
-			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
-			if (result.get("guid") != null) {
-				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\",", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
-			} else {
-				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\",", "\"id\":", result.get("id").toString(), "}");
-			}
+			json = (String) crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param).get("r_json").toString();
+//			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
+//			if (result.get("guid") != null) {
+//				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\",", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
+//			} else {
+//				json = CommonUtil.concatStrings("{", "\"message\":\"Обновлено\",", "\"id\":", result.get("id").toString(), "}");
+//			}
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
@@ -77,12 +78,7 @@ public class CRUDController {
 		String json = "";
 
 		if (param != null) {
-			Map<String, Object> result = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param);
-			if (result.get("guid") != null) {
-				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), ",", "\"guid\":\"", result.get("guid").toString(), "\"", "}");
-			} else {
-				json = CommonUtil.concatStrings("{", "\"id\":", result.get("id").toString(), "}");
-			}
+			json = (String) crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, param).get("r_json").toString();
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
