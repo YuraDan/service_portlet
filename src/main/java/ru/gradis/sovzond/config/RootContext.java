@@ -9,9 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
 import ru.gradis.sovzond.model.dao.ConfigDAO;
 import ru.gradis.sovzond.model.dao.LoginDAO;
+import ru.gradis.sovzond.model.dao.ReportDAO;
 import ru.gradis.sovzond.model.dao.impl.CRUDServiceDAOImpl;
 import ru.gradis.sovzond.model.dao.impl.ConfigDAOImpl;
 import ru.gradis.sovzond.model.dao.impl.LoginDAOImpl;
+import ru.gradis.sovzond.model.dao.impl.ReportDAOImpl;
 
 import javax.sql.DataSource;
 
@@ -68,6 +70,11 @@ public class RootContext extends WebMvcConfigurerAdapter {
 	@Bean
 	public CRUDServiceDAO crudServiceDAO() {
 		return new CRUDServiceDAOImpl(getDataSource());
+	}
+
+	@Bean
+	public ReportDAO reportDAO() {
+		return new ReportDAOImpl(getDataSource());
 	}
 
 }
