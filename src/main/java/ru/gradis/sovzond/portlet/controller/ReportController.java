@@ -3,6 +3,8 @@ package ru.gradis.sovzond.portlet.controller;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,6 @@ public class ReportController {
 			name = map.get("filename").toString();
 			titleName = map.get("name").toString();
 			configTitle = JsonBuilder.getValueFromJsonString(param, "_config_title");
-			System.out.println("param = " + param);
-			System.out.println("configTitle = " + configTitle);
 		} catch (JSONException e) {
 			log.error(e);
 		} finally {
@@ -70,6 +70,7 @@ public class ReportController {
 		}
 	}
 
+	@NotNull
 	private String getUrl(String host, String port, boolean view) {
 		String rep;
 		rep = (view == true) ? "/Report_Viewer" : "/Report_Designer";
@@ -78,6 +79,7 @@ public class ReportController {
 		return sb.toString();
 	}
 
+	@Contract(pure = true)
 	private String getReportUrl(boolean view) {
 		String rep;
 		rep = (view == true) ? "Report_Viewer" : "Report_Designer";

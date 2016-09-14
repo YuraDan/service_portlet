@@ -1,9 +1,13 @@
 package ru.gradis.sovzond.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import static java.nio.file.Files.lines;
 
 /**
  * Created by donchenko-y on 7/8/16.
@@ -15,6 +19,7 @@ public class CommonUtil {
 		return new String(encoded, encoding);
 	}
 
+	@NotNull
 	public static String concatStrings(String... strings) {
 		StringBuilder sb = new StringBuilder();
 		for (String s : strings) {
@@ -22,5 +27,10 @@ public class CommonUtil {
 		}
 		return sb.toString();
 	}
+
+	public static String newConcatStrings(String... strings) {
+		return String.join("", strings);
+	}
+
 
 }

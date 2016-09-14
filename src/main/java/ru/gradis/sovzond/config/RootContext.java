@@ -14,6 +14,8 @@ import ru.gradis.sovzond.model.dao.impl.CRUDServiceDAOImpl;
 import ru.gradis.sovzond.model.dao.impl.ConfigDAOImpl;
 import ru.gradis.sovzond.model.dao.impl.LoginDAOImpl;
 import ru.gradis.sovzond.model.dao.impl.ReportDAOImpl;
+import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
+import ru.gradis.sovzond.portlet.service.impl.DocumentRepositoryServiceImpl;
 
 import javax.sql.DataSource;
 
@@ -76,5 +78,11 @@ public class RootContext extends WebMvcConfigurerAdapter {
 	public ReportDAO reportDAO() {
 		return new ReportDAOImpl(getDataSource());
 	}
+
+	@Bean
+	public DocumentRepositoryService documentRepositoryService() {
+		return new DocumentRepositoryServiceImpl();
+	}
+
 
 }
