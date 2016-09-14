@@ -38,7 +38,7 @@ public class DocumentRepositoryController {
 		if (file != null && param != null) {
 			System.out.println("param = " + param);
 			try {
-				json = documentRepositoryService.saveFile(multipartToFile(file), null, userId, groupId, folderId);
+				json = documentRepositoryService.saveFile(multipartToFile(file), null, userId, groupId, folderId, param);
 //				json = documentRepositoryService.saveFile(multipartToFile(file), null, 20434, 20182, 0);
 				return new ResponseEntity<String>(json, HttpStatus.OK);
 			} catch (IOException | PortalException | SystemException e) {
