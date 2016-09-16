@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <liferay-portlet-app>
 	<portlet>
-		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 		<portlet-name>service-portlet</portlet-name>
 		<icon>/icon.png</icon>
+		<private-session-attributes>false</private-session-attributes>
+		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 		<instanceable>false</instanceable>
 	</portlet>
 	<role-mapper>

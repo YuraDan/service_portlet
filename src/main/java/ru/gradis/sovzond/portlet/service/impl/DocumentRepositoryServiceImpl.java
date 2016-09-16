@@ -49,13 +49,13 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 		fileUrl = getfileUrl(groupId, folderId, title);
 
 		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
-		jsonParam.put("\"_config_dataset\"", "\"dsPage\"");
-		jsonParam.put("\"url\"", "\"" + fileUrl + "\"");
+		jsonParam.put("_config_dataset", "dsPage");
+		jsonParam.put("url", fileUrl);
 
 		System.out.println("OUTjsonParam = " + jsonParam);
 
 		//add information about file to database
-		crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.UPDATE, param);
+		crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, jsonParam.toString());
 
 		return fileUrl;
 	}
