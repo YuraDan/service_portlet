@@ -46,13 +46,12 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 				title, "description", "changeLog", file, getServiceContext()
 		);
 
-		fileUrl = getfileUrl(groupId, folderId, title);
+		fileUrl = getfileUrlByTitle(groupId, folderId, title);
 
 		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
 		jsonParam.put("_config_dataset", "dsPage");
 		jsonParam.put("url", fileUrl);
-
-		System.out.println("OUTjsonParam = " + jsonParam);
+		jsonParam.put("fileentryid", addedFile.getFileEntryId());
 
 		//add information about file to database
 		crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, jsonParam.toString());
@@ -61,7 +60,7 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 	}
 
 	@Override
-	public String getfileUrl(long groupId, long folderId, String title) {
+	public String getfileUrlByTitle(long groupId, long folderId, String title) {
 		DLFileEntry fileEntry = null;
 		String url = "UNDEF";
 
@@ -76,6 +75,43 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 			e.printStackTrace();
 		}
 		return url;
+	}
+
+	@Override
+	public String getfileUrlById(long fileEntryId) {
+		DLFileEntry fileEntry = null;
+		String url = "UNDEF";
+		try {
+			fileEntry = DLFileEntryLocalServiceUtil.getFileEntry(fileEntryId);
+			url = String.join("/", "/documents", String.valueOf(fileEntry.getRepositoryId()),
+					String.valueOf(fileEntry.getFolderId()), HttpUtil.encodeURL(HtmlUtil.unescape(fileEntry.getTitle()), true)
+			);
+		} catch (PortalException | SystemException e) {
+			e.printStackTrace();
+		}
+		return url;
+	}
+
+	@Override
+	public void deleteFile(long fileEntryId, String param) throws PortalException, SystemException {
+		DLFileEntry fileEntry = null;
+
+		DLFileEntryLocalServiceUtil.deleteFileEntry(fileEntryId);
+		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
+		jsonParam.put("_config_dataset", "dsPage");
+		crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.DELETE, jsonParam.toString());
+
+	}
+
+	@Override
+	public void deleteFileByUuid(String uuid, long groupId) {
+		DLFileEntry fileEntry = null;
+		try {
+			fileEntry = DLFileEntryLocalServiceUtil.getFileEntryByUuidAndGroupId(uuid, groupId);
+			DLFileEntryLocalServiceUtil.deleteFileEntry(fileEntry);
+		} catch (PortalException | SystemException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private ServiceContext getServiceContext() {

@@ -16,7 +16,13 @@ public interface DocumentRepositoryService {
 
 	public String saveFile(File file, String fileName, long userId, long groupId, long folderId, String param) throws SystemException, PortalException;
 
-	public String getfileUrl(long groupId, long folderId, String title);
+	public String getfileUrlByTitle(long groupId, long folderId, String title);
+
+	public String getfileUrlById(long fileEntryId);
+
+	public void deleteFile(long fileEntryId, String Param) throws SystemException, PortalException;
+
+	public void deleteFileByUuid(String uuid, long groupId);
 
 
 }

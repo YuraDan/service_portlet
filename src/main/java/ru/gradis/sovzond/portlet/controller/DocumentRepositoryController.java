@@ -79,13 +79,34 @@ public class DocumentRepositoryController {
 		String json = "";
 
 		if (param != null) {
-			json = documentRepositoryService.getfileUrl(groupId, folderId, title);
+			json = documentRepositoryService.getfileUrlByTitle(groupId, folderId, title);
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		}
 
 		return new ResponseEntity<String>("Требуется передать параметры!", HttpStatus.BAD_REQUEST);
 
 	}
+
+	@RequestMapping(value = "/Services/deleteFile", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<String> deleteFile(@RequestParam(value = "param", required = true) String param, @RequestParam("fileEntryId") long fileEntryId) {
+		String json = "";
+
+		if (param != null) {
+			try {
+				documentRepositoryService.deleteFile(fileEntryId, param);
+			} catch (SystemException | PortalException e) {
+				log.error(e);
+				json = String.join("", "{", "message:", "\"", e.toString(), "\"", "}");
+				return new ResponseEntity<String>(json, HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+		}
+
+		return new ResponseEntity<String>("Требуется передать параметры!", HttpStatus.BAD_REQUEST);
+
+	}
+
 
 	private java.io.File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
 		java.io.File convFile = new java.io.File(multipart.getOriginalFilename());
