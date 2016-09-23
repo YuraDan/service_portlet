@@ -2,17 +2,15 @@ package ru.gradis.sovzond.portlet.controller;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
 import ru.gradis.sovzond.util.CommonUtil;
+import ru.gradis.sovzond.util.ParamMap;
 
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 /**
  * Created by donchenko-y on 7/13/16.
@@ -27,7 +25,7 @@ public class CRUDController extends Controller {
 	private CRUDServiceDAO crudServiceDAO;
 
 
-	private static final Log log = LogFactoryUtil.getLog(ConfigController.class);
+	private static final Log log = LogFactoryUtil.getLog(CRUDController.class);
 
 	@RequestMapping(value = "/Services/getData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -55,20 +53,23 @@ public class CRUDController extends Controller {
 	}
 
 	private ResponseEntity<String> execute(String param, HttpSession httpSession, CRUDServiceDAO.Action action) {
-		String json = "";
 
-		verifyUserLogon2(httpSession);
+		ParamMap params = new ParamMap();
+		params.putString("param", param);
+		params.put("action", CRUDServiceDAO.Action.class, action);
 
-		if (stringResponseEntity.getStatusCode() == HttpStatus.OK) {
-			if (param != null) {
-				json = (String) crudServiceDAO.executeDataAction(action, param).get("r_json").toString();
-				return new ResponseEntity<String>(json, HttpStatus.OK);
-			}
+		return getResponse(httpSession, params);
 
-			return new ResponseEntity<String>("Требуется передать param-json!", HttpStatus.BAD_REQUEST);
-		} else {
-			return stringResponseEntity;
-		}
 	}
 
+	@Override
+	protected <T> T process(ParamMap params) {
+		T answer = null;
+		if (params.getString("param") != null) {
+			answer = (T) crudServiceDAO.executeDataAction(params.get("action", CRUDServiceDAO.Action.class), params.getString("param")).get("r_json").toString();
+			return answer;
+		}
+		answer = (T) CommonUtil.getBadResponseFromString("Требуется передать param-json!");
+		return answer;
+	}
 }

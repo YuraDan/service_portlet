@@ -9,14 +9,21 @@ import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.model.DLFolder;
+import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
+import ru.gradis.sovzond.model.dao.FileRepositoryDAO;
 import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
 import ru.gradis.sovzond.util.JsonBuilder;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by donchenko-y on 12.09.16.
@@ -28,17 +35,21 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 	@Autowired
 	private CRUDServiceDAO crudServiceDAO;
 
+	@SuppressWarnings("SpringJavaAutowiringInspection")
+	@Autowired
+	private FileRepositoryDAO fileRepositoryDAO;
+
 
 	@Override
-	public String saveFile(File file, String fileName, long userId, long groupId, long folderId, String param) throws SystemException, PortalException {
-
+	public String saveFile(MultipartFile mFile, String fileName, long userId, long groupId, long folderId, String param) throws SystemException, PortalException, IOException {
 		long repositoryId = 0;
 		repositoryId = groupId;
-		String fileUrl = "UNDEF";
+		String fileUrl, insertResult = "UNDEF";
+		byte[] bytesOfFile = mFile.getBytes();
+		File file = multipartToFile(mFile);
 
 		String mimeType = MimeTypesUtil.getContentType(file);
 		String title = file.getName();
-
 		fileName = fileName != null ? fileName : file.getName();
 
 		//save file to repository
@@ -47,15 +58,16 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 		);
 
 		fileUrl = getfileUrlByTitle(groupId, folderId, title);
-
 		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
 		jsonParam.put("_config_dataset", "dsPage");
 		jsonParam.put("url", fileUrl);
 		jsonParam.put("fileentryid", addedFile.getFileEntryId());
-
 		//add information about file to database
-		crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, jsonParam.toString());
-
+		insertResult = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.INSERT, jsonParam.toString()).get("r_json").toString();
+		//parsing if xml extension
+		if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xml") || FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("csv")) {
+			fileRepositoryDAO.databaseXmlParsing(bytesOfFile, insertResult);
+		}
 		return fileUrl;
 	}
 
@@ -63,7 +75,6 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 	public String getfileUrlByTitle(long groupId, long folderId, String title) {
 		DLFileEntry fileEntry = null;
 		String url = "UNDEF";
-
 		try {
 			fileEntry = DLFileEntryLocalServiceUtil.getFileEntry(groupId, folderId, title);
 //			fileEntry = DLAppServiceUtil.getFileEntry(groupId, folderId, title);
@@ -93,9 +104,16 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 	}
 
 	@Override
+	public Long addNewFolder(long userId, long groupId, String name) throws SystemException, PortalException {
+		DLFolder addedFolder = DLFolderLocalServiceUtil.addFolder(userId, groupId, groupId, false,
+				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, name, "description", false, getServiceContext()
+		);
+		return addedFolder.getFolderId();
+	}
+
+	@Override
 	public void deleteFile(long fileEntryId, String param) throws PortalException, SystemException {
 		DLFileEntry fileEntry = null;
-
 		DLFileEntryLocalServiceUtil.deleteFileEntry(fileEntryId);
 		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
 		jsonParam.put("_config_dataset", "dsPage");
@@ -121,4 +139,9 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 		return serviceContext;
 	}
 
+	private java.io.File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
+		java.io.File convFile = new java.io.File(multipart.getOriginalFilename());
+		multipart.transferTo(convFile);
+		return convFile;
+	}
 }

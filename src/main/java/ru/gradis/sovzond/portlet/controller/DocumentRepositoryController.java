@@ -2,7 +2,6 @@ package ru.gradis.sovzond.portlet.controller;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
-import ru.gradis.sovzond.util.CommonUtil;
-import ru.gradis.sovzond.util.JsonBuilder;
 
+import ru.gradis.sovzond.util.ParamMap;
+
+import javax.servlet.http.HttpSession;
 import java.io.*;
 
 /**
@@ -22,7 +22,7 @@ import java.io.*;
 
 
 @RestController
-public class DocumentRepositoryController {
+public class DocumentRepositoryController extends Controller {
 
 	private static final Log log = LogFactoryUtil.getLog(DocumentRepositoryController.class);
 
@@ -35,84 +35,75 @@ public class DocumentRepositoryController {
 	public ResponseEntity<String> saveFile(@RequestParam("files[]") MultipartFile file, @RequestParam(value = "param", required = true) String param, @RequestParam("userid") long userId, @RequestParam("groupid") long groupId, @RequestParam("folderid") long folderId) {
 		String json = "";
 
-		if (file != null && param != null) {
-			System.out.println("param = " + param);
-			try {
-				json = documentRepositoryService.saveFile(multipartToFile(file), null, userId, groupId, folderId, param);
+		if (file == null || param == null)
+			return new ResponseEntity<String>("Требуется передать параметры и файлы!", HttpStatus.BAD_REQUEST);
+		try {
+			json = documentRepositoryService.saveFile(file, null, userId, groupId, folderId, param);
 //				json = documentRepositoryService.saveFile(multipartToFile(file), null, 20434, 20182, 0);
-				return new ResponseEntity<String>(json, HttpStatus.OK);
-			} catch (IOException | PortalException | SystemException e) {
-				log.error(e);
-				json = String.join("", "{", "message:", "\"", e.toString(), "\"", "}");
-				return new ResponseEntity<String>(json, HttpStatus.BAD_REQUEST);
-			}
+			return new ResponseEntity<String>(json, HttpStatus.OK);
+		} catch (IOException | PortalException | SystemException e) {
+			log.error(e);
+			return new ResponseEntity<String>(String.join("", "{", "message:", "\"", e.toString(), "\"", "}"), HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<String>("Требуется передать параметры и файлы!", HttpStatus.BAD_REQUEST);
+
 	}
 
 	@RequestMapping(value = "/Services/addNewFolder", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> addFolder(@RequestParam(value = "param", required = true) String param) {
-		String json = "";
+	public ResponseEntity addFolder(@RequestParam(value = "param", required = true) String param, @RequestParam("userid") long userId, @RequestParam("groupid") long groupId, @RequestParam("name") String name) {
 
-//		if (param != null) {
-//			DLFolder addedFolder = DLFolderLocalServiceUtil.addFolder(
-//					userId,
-//					groupId,
-//					repoId, //GroupID og Site
-//					false,
-//					DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
-//					"folderName",
-//					"description",
-//					false,
-//					new ServiceContext());
-//		}
-
-		return new ResponseEntity<String>("Требуется передать параметры !", HttpStatus.BAD_REQUEST);
-
+		if (param == null) return new ResponseEntity<String>("Требуется передать параметры !", HttpStatus.BAD_REQUEST);
+		try {
+			Long folderId = documentRepositoryService.addNewFolder(userId, groupId, name);
+			return new ResponseEntity<Long>(folderId, HttpStatus.OK);
+		} catch (PortalException | SystemException e) {
+			log.error(e);
+			return new ResponseEntity<String>(String.join("", "{", "message:", "\"", e.toString(), "\"", "}"), HttpStatus.BAD_REQUEST);
+		}
 	}
-
 
 	@RequestMapping(value = "/Services/getFileUrl", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> getFileUrl(@RequestParam(value = "param", required = true) String param, @RequestParam("groupId") long groupId, @RequestParam("folderId") long folderId, @RequestParam("title") String title) {
-		String json = "";
-
-		if (param != null) {
-			json = documentRepositoryService.getfileUrlByTitle(groupId, folderId, title);
-			return new ResponseEntity<String>(json, HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("Требуется передать параметры!", HttpStatus.BAD_REQUEST);
-
+	public ResponseEntity<String> getFileUrl(@RequestParam(value = "param", required = true) String param, @RequestParam("groupId") long groupId, @RequestParam("folderId") long folderId, @RequestParam("title") String title, HttpSession httpSession) {
+		ParamMap params = new ParamMap();
+		params.putLong("groupId", groupId);
+		params.putLong("folderId", folderId);
+		params.putString("title", title);
+		return getResponse(httpSession, params);
 	}
 
 	@RequestMapping(value = "/Services/deleteFile", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> deleteFile(@RequestParam(value = "param", required = true) String param, @RequestParam("fileEntryId") long fileEntryId) {
+	public ResponseEntity<String> deleteFile(@RequestParam(value = "param", required = true) String param, @RequestParam("fileEntryId") long fileEntryId, HttpSession httpSession) {
 		String json = "";
+		ParamMap params = new ParamMap();
+		params.put("fileAction", DocumentRepositoryService.FileAction.class, DocumentRepositoryService.FileAction.DELETE_FILE);
+		params.putString("param", param);
+		params.putLong("fileAction", fileEntryId);
+		return getResponse(httpSession, params);
 
-		if (param != null) {
-			try {
-				documentRepositoryService.deleteFile(fileEntryId, param);
-			} catch (SystemException | PortalException e) {
-				log.error(e);
-				json = String.join("", "{", "message:", "\"", e.toString(), "\"", "}");
-				return new ResponseEntity<String>(json, HttpStatus.BAD_REQUEST);
+	}
+
+	@Override
+	protected <T> T process(ParamMap params) {
+		if (params.getString("param") == null)
+			return (T) new ResponseEntity<String>("Требуется передать параметры!", HttpStatus.BAD_REQUEST);
+		switch (params.get("fileAction", DocumentRepositoryService.FileAction.class)) {
+			case DELETE_FILE: {
+				String json = "";
+				try {
+					documentRepositoryService.deleteFile(params.getLong("fileEntryID"), params.getString("param"));
+				} catch (SystemException | PortalException e) {
+					log.error(e);
+					json = String.join("", "{", "message:", "\"", e.toString(), "\"", "}");
+					return (T) new ResponseEntity<String>(json, HttpStatus.BAD_REQUEST);
+				}
+				return (T) new ResponseEntity<String>("Deleted", HttpStatus.OK);
 			}
-			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+			case GET_FILE_URL: {
+				return (T) documentRepositoryService.getfileUrlByTitle(params.getLong("groupId"), params.getLong("folderId"), params.getString("title"));
+			}
 		}
-
-		return new ResponseEntity<String>("Требуется передать параметры!", HttpStatus.BAD_REQUEST);
-
+		return (T) new ResponseEntity<String>("Error file action in document service!", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
-
-	private java.io.File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
-		java.io.File convFile = new java.io.File(multipart.getOriginalFilename());
-		multipart.transferTo(convFile);
-		return convFile;
-	}
-
-
 }

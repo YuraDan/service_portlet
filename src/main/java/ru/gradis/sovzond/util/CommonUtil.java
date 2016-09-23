@@ -1,6 +1,8 @@
 package ru.gradis.sovzond.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,5 +34,12 @@ public class CommonUtil {
 		return String.join("", strings);
 	}
 
+	public static ResponseEntity<String> getOkResponseFromString(String str) {
+		return new ResponseEntity<String>(str, HttpStatus.OK);
+	}
+
+	public static ResponseEntity<String> getBadResponseFromString(String str) {
+		return new ResponseEntity<String>(str, HttpStatus.BAD_REQUEST);
+	}
 
 }

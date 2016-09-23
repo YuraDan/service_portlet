@@ -1,19 +1,22 @@
 package ru.gradis.sovzond.portlet.controller;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
+
+import ru.gradis.sovzond.util.ParamMap;
 
 import javax.servlet.http.HttpSession;
+
 
 /**
  * Created by donchenko-y on 15.09.16.
  */
 
 public abstract class Controller {
+
+	private static final Log log = LogFactoryUtil.getLog(Controller.class);
 
 	ResponseEntity<String> stringResponseEntity;
 
@@ -30,5 +33,20 @@ public abstract class Controller {
 		} else stringResponseEntity = new ResponseEntity<String>("login", HttpStatus.OK);
 	}
 
+	public <T> ResponseEntity getResponse(HttpSession httpSession, ParamMap paramMap) {
+		T answer = null;
+		verifyUserLogon2(httpSession);
+		if (stringResponseEntity.getStatusCode() != HttpStatus.OK) {
+			return stringResponseEntity;
+		}
+		answer = process(paramMap);
+		answer = answer == null ? (T) "Nothing to response!" : answer;
+		if (ResponseEntity.class.isInstance(answer)) {
+			return (ResponseEntity) answer;
+		}
+		return new ResponseEntity<String>((String) answer, HttpStatus.OK);
+	}
+
+	protected abstract <T> T process(ParamMap params);
 
 }

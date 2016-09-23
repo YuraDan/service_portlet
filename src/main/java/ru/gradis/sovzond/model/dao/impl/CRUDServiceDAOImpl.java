@@ -36,7 +36,6 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 		log.info(simpleJdbcCallResult);
 
 		return simpleJdbcCallResult;
-
 	}
 
 	private SimpleJdbcCall getJdbcCallByAction(Action action) {
