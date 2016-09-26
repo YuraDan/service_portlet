@@ -27,6 +27,16 @@ public class CRUDController extends Controller {
 
 	private static final Log log = LogFactoryUtil.getLog(CRUDController.class);
 
+
+	@RequestMapping(value = "/Services/getPublicData", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<String> getPublicData(@RequestParam(value = "param", required = true) String param) {
+		String answer = null;
+		if (param == null) return CommonUtil.getBadResponseFromString("Требуется передать param-json!");
+		answer = crudServiceDAO.executeDataAction(CRUDServiceDAO.Action.PUBLIC_GET, param).get("r_json").toString();
+		return CommonUtil.getOkResponseFromString(answer);
+	}
+
 	@RequestMapping(value = "/Services/getData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param, HttpSession httpSession) {

@@ -53,6 +53,9 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 			case GET:
 				simpleJdbcCall = initCrudProc(dataSource, "config", "pr_get_json_data");
 				break;
+			case PUBLIC_GET:
+				simpleJdbcCall = initCrudProc(dataSource, "config", "pr_get_json_data_public");
+				break;
 		}
 		return simpleJdbcCall;
 	}

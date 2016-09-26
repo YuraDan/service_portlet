@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface CRUDServiceDAO {
 
-	public enum Action {GET, INSERT, UPDATE, DELETE}
+	public enum Action {GET, INSERT, UPDATE, DELETE, PUBLIC_GET}
 
 	public Map<String, Object> executeDataAction(Action action, String param);
 
