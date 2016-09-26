@@ -20,14 +20,16 @@ public abstract class Controller {
 
 	ResponseEntity<String> stringResponseEntity;
 
-	ResponseEntity<String> verifyUserLogon(HttpSession httpSession) {
+	private ResponseEntity verifyUserLogon(HttpSession httpSession) {
+		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("USER_UUID"));
 		if (httpSession.getAttribute("USER_UUID") == null ? true : false) {
 			return new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
 		}
 		return new ResponseEntity<String>("login", HttpStatus.OK);
 	}
 
-	void verifyUserLogon2(HttpSession httpSession) {
+	private void verifyUserLogon2(HttpSession httpSession) {
+		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("USER_UUID"));
 		if (httpSession.getAttribute("USER_UUID") == null ? true : false) {
 			stringResponseEntity = new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
 		} else stringResponseEntity = new ResponseEntity<String>("login", HttpStatus.OK);
@@ -35,10 +37,10 @@ public abstract class Controller {
 
 	public <T> ResponseEntity getResponse(HttpSession httpSession, ParamMap paramMap) {
 		T answer = null;
-		verifyUserLogon2(httpSession);
-		if (stringResponseEntity.getStatusCode() != HttpStatus.OK) {
-			return stringResponseEntity;
-		}
+		ResponseEntity responseEntity = verifyUserLogon(httpSession);
+//		verifyUserLogon2(httpSession);
+		if (responseEntity.getStatusCode() != HttpStatus.OK) return responseEntity;
+
 		answer = process(paramMap);
 		answer = answer == null ? (T) "Nothing to response!" : answer;
 		if (ResponseEntity.class.isInstance(answer)) {
