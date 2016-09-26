@@ -1,19 +1,14 @@
 package ru.gradis.sovzond.config;
 
 import com.liferay.portal.kernel.util.InfrastructureUtil;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
-import ru.gradis.sovzond.model.dao.ConfigDAO;
-import ru.gradis.sovzond.model.dao.LoginDAO;
-import ru.gradis.sovzond.model.dao.ReportDAO;
-import ru.gradis.sovzond.model.dao.impl.CRUDServiceDAOImpl;
-import ru.gradis.sovzond.model.dao.impl.ConfigDAOImpl;
-import ru.gradis.sovzond.model.dao.impl.LoginDAOImpl;
-import ru.gradis.sovzond.model.dao.impl.ReportDAOImpl;
+import ru.gradis.sovzond.model.dao.*;
+import ru.gradis.sovzond.model.dao.impl.*;
 import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
 import ru.gradis.sovzond.portlet.service.impl.DocumentRepositoryServiceImpl;
 
@@ -28,8 +23,8 @@ import javax.sql.DataSource;
 @EnableWebMvc
 public class RootContext extends WebMvcConfigurerAdapter {
 
-	public DataSource dataSource;
-//	BasicDataSource dbcp = new BasicDataSource();
+	//	public DataSource dataSource;
+	BasicDataSource dbcp = new BasicDataSource();
 //	DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
 
@@ -38,7 +33,7 @@ public class RootContext extends WebMvcConfigurerAdapter {
 		/**
 		 * Lifray DataSource
 		 */
-		dataSource = InfrastructureUtil.getDataSource();
+//		dataSource = InfrastructureUtil.getDataSource();
 		/**
 		 * Spring DataSource
 		 * generate new connection
@@ -51,11 +46,11 @@ public class RootContext extends WebMvcConfigurerAdapter {
 		 * Apache pool DataSource
 		 *
 		 */
-//		dbcp.setDriverClassName("org.postgresql.Driver");
-//		dbcp.setUrl("jdbc:postgresql://192.168.42.21:5432/mo");
-//		dbcp.setUsername("rc7postgres");
-//		dbcp.setPassword("9PmAPWXHefUn");
-		return dataSource;
+		dbcp.setDriverClassName("org.postgresql.Driver");
+		dbcp.setUrl("jdbc:postgresql://192.168.42.21:5432/mo");
+		dbcp.setUsername("rc7postgres");
+		dbcp.setPassword("9PmAPWXHefUn");
+		return dbcp;
 	}
 
 
@@ -82,6 +77,11 @@ public class RootContext extends WebMvcConfigurerAdapter {
 	@Bean
 	public DocumentRepositoryService documentRepositoryService() {
 		return new DocumentRepositoryServiceImpl();
+	}
+
+	@Bean
+	public FileRepositoryDAO fileRepositoryDAO() {
+		return new FileRepositoryDAOImpl(getDataSource());
 	}
 
 
