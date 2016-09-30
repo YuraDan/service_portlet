@@ -10,6 +10,7 @@ import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
 import ru.gradis.sovzond.util.CommonUtil;
 import ru.gradis.sovzond.util.ParamMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -39,47 +40,41 @@ public class CRUDController extends Controller {
 
 	@RequestMapping(value = "/Services/getData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param, HttpSession httpSession) {
-		return execute(param, httpSession, CRUDServiceDAO.Action.GET);
+	public ResponseEntity<String> getData(@RequestParam(value = "param", required = true) String param, HttpServletRequest request, HttpSession httpSession) {
+		return execute(param, request, httpSession, CRUDServiceDAO.Action.GET);
 	}
 
 	@RequestMapping(value = "/Services/deleteData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param, HttpSession httpSession) {
-		return execute(param, httpSession, CRUDServiceDAO.Action.DELETE);
+	public ResponseEntity<String> delete(@RequestParam(value = "param", required = true) String param, HttpServletRequest request, HttpSession httpSession) {
+		return execute(param, request, httpSession, CRUDServiceDAO.Action.DELETE);
 	}
 
 	@RequestMapping(value = "/Services/updateData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> update(@RequestParam(value = "param", required = true) String param, HttpSession httpSession) {
-		return execute(param, httpSession, CRUDServiceDAO.Action.UPDATE);
+	public ResponseEntity<String> update(@RequestParam(value = "param", required = true) String param, HttpServletRequest request, HttpSession httpSession) {
+		return execute(param, request, httpSession, CRUDServiceDAO.Action.UPDATE);
 
 	}
 
 	@RequestMapping(value = "/Services/insertData", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> insert(@RequestParam(value = "param", required = true) String param, HttpSession httpSession) {
-		return execute(param, httpSession, CRUDServiceDAO.Action.INSERT);
+	public ResponseEntity<String> insert(@RequestParam(value = "param", required = true) String param, HttpServletRequest request, HttpSession httpSession) {
+		return execute(param, request, httpSession, CRUDServiceDAO.Action.INSERT);
 	}
 
-	private ResponseEntity<String> execute(String param, HttpSession httpSession, CRUDServiceDAO.Action action) {
-
+	private ResponseEntity<String> execute(String param, HttpServletRequest request, HttpSession httpSession, CRUDServiceDAO.Action action) {
 		ParamMap params = new ParamMap();
 		params.putString("param", param);
 		params.put("action", CRUDServiceDAO.Action.class, action);
-
-		return getResponse(httpSession, params);
-
+		return getResponse(request, httpSession, params);
 	}
 
 	@Override
 	protected <T> T process(ParamMap params) {
-		T answer = null;
 		if (params.getString("param") != null) {
-			answer = (T) crudServiceDAO.executeDataAction(params.get("action", CRUDServiceDAO.Action.class), params.getString("param")).get("r_json").toString();
-			return answer;
+			return (T) crudServiceDAO.executeDataAction(params.get("action", CRUDServiceDAO.Action.class), params.getString("param")).get("r_json").toString();
 		}
-		answer = (T) CommonUtil.getBadResponseFromString("Требуется передать param-json!");
-		return answer;
+		return (T) CommonUtil.getBadResponseFromString("Требуется передать param-json!");
 	}
 }

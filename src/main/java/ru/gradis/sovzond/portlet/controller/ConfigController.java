@@ -10,6 +10,7 @@ import ru.gradis.sovzond.model.dao.ConfigDAO;
 import ru.gradis.sovzond.util.CommonUtil;
 import ru.gradis.sovzond.util.ParamMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -27,22 +28,18 @@ public class ConfigController extends Controller {
 
 	@RequestMapping(value = "/Services/getConfig", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> getConfig(@RequestParam("param") String param, HttpSession httpSession) {
+	public ResponseEntity<String> getConfig(@RequestParam("param") String param, HttpServletRequest req, HttpSession httpSession) {
 		ParamMap params = new ParamMap();
 		params.putString("param", param);
-		return getResponse(httpSession, params);
+		return getResponse(req, httpSession, params);
 	}
-
 
 	@Override
 	protected <T> T process(ParamMap params) {
 		String json = "";
-		if (params.getString("param") == null) {
+		if (params.getString("param") == null)
 			return (T) CommonUtil.getBadResponseFromString("Заданы не все параметры!");
-		} else {
-			json = (String) configDAO.getConfig(params.getString("param"));
-			return (T) json;
-		}
-
+		json = (String) configDAO.getConfig(params.getString("param"));
+		return (T) json;
 	}
 }

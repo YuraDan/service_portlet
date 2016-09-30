@@ -34,13 +34,13 @@ public class UtilController extends Controller {
 
 	@RequestMapping(value = "/Services/getPortraitUrl", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> getPortraitUrl(@RequestParam("userId") long userId, @RequestParam("imagePath") String imagePath, HttpSession httpSession) {
+	public ResponseEntity<String> getPortraitUrl(@RequestParam("userId") long userId, @RequestParam("imagePath") String imagePath, HttpServletRequest request, HttpSession httpSession) {
 		ParamMap params = new ParamMap();
 		params.putString("image", "false");
 		params.putLong("userId", userId);
 		params.putString("imagePath", imagePath);
 
-		return getResponse(httpSession, params);
+		return getResponse(request, httpSession, params);
 	}
 
 	@RequestMapping(value = "/Services/getPortraitImage", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)

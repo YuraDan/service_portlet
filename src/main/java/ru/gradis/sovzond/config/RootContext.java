@@ -1,6 +1,5 @@
 package ru.gradis.sovzond.config;
 
-import com.liferay.portal.kernel.util.InfrastructureUtil;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

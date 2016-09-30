@@ -13,6 +13,7 @@ import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
 
 import ru.gradis.sovzond.util.ParamMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 
@@ -45,13 +46,11 @@ public class DocumentRepositoryController extends Controller {
 			log.error(e);
 			return new ResponseEntity<String>(String.join("", "{", "message:", "\"", e.toString(), "\"", "}"), HttpStatus.BAD_REQUEST);
 		}
-
 	}
 
 	@RequestMapping(value = "/Services/addNewFolder", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity addFolder(@RequestParam(value = "param", required = true) String param, @RequestParam("userid") long userId, @RequestParam("groupid") long groupId, @RequestParam("name") String name) {
-
 		if (param == null) return new ResponseEntity<String>("Требуется передать параметры !", HttpStatus.BAD_REQUEST);
 		try {
 			Long folderId = documentRepositoryService.addNewFolder(userId, groupId, name);
@@ -64,24 +63,23 @@ public class DocumentRepositoryController extends Controller {
 
 	@RequestMapping(value = "/Services/getFileUrl", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> getFileUrl(@RequestParam(value = "param", required = true) String param, @RequestParam("groupId") long groupId, @RequestParam("folderId") long folderId, @RequestParam("title") String title, HttpSession httpSession) {
+	public ResponseEntity<String> getFileUrl(@RequestParam(value = "param", required = true) String param, @RequestParam("groupId") long groupId, @RequestParam("folderId") long folderId, @RequestParam("title") String title, HttpServletRequest request, HttpSession httpSession) {
 		ParamMap params = new ParamMap();
 		params.putLong("groupId", groupId);
 		params.putLong("folderId", folderId);
 		params.putString("title", title);
-		return getResponse(httpSession, params);
+		return getResponse(request, httpSession, params);
 	}
 
 	@RequestMapping(value = "/Services/deleteFile", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<String> deleteFile(@RequestParam(value = "param", required = true) String param, @RequestParam("fileEntryId") long fileEntryId, HttpSession httpSession) {
+	public ResponseEntity<String> deleteFile(@RequestParam(value = "param", required = true) String param, @RequestParam("fileEntryId") long fileEntryId, HttpServletRequest request, HttpSession httpSession) {
 		String json = "";
 		ParamMap params = new ParamMap();
 		params.put("fileAction", DocumentRepositoryService.FileAction.class, DocumentRepositoryService.FileAction.DELETE_FILE);
 		params.putString("param", param);
 		params.putLong("fileAction", fileEntryId);
-		return getResponse(httpSession, params);
-
+		return getResponse(request, httpSession, params);
 	}
 
 	@Override
