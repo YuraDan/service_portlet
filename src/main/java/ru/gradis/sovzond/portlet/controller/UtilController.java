@@ -52,8 +52,13 @@ public class UtilController extends Controller {
 			if (userId == null || imagePath == null) {
 				urlString = defaultUrlString;
 			} else {
-				User user = UserLocalServiceUtil.getUserById(userId);
-				urlString = user.isDefaultUser() || user == null ? defaultUrlString : String.join("", "http://", httpRequest.getLocalAddr(), ":", String.valueOf(httpRequest.getLocalPort()), "/", UserConstants.getPortraitURL(imagePath, user.getMale(), user.getPortraitId()));
+				User user = null;
+				try {
+					user = UserLocalServiceUtil.getUserById(userId);
+					urlString = user.isDefaultUser() || user == null ? defaultUrlString : String.join("", "http://", httpRequest.getLocalAddr(), ":", String.valueOf(httpRequest.getLocalPort()), "/", UserConstants.getPortraitURL(imagePath, user.getMale(), user.getPortraitId()));
+				} catch (PortalException e) {
+					urlString = defaultUrlString;
+				}
 			}
 			URL url = new URL(urlString);
 			InputStream is = url.openStream();
@@ -61,7 +66,7 @@ public class UtilController extends Controller {
 			ByteArrayOutputStream bao = new ByteArrayOutputStream();
 			ImageIO.write(img, "jpg", bao);
 			return new ResponseEntity<byte[]>(bao.toByteArray(), HttpStatus.OK);
-		} catch (SystemException | PortalException | IOException e) {
+		} catch (SystemException | IOException e) {
 			log.error(e);
 		}
 		return new ResponseEntity<String>("Image not found or params incorrect!", HttpStatus.BAD_REQUEST);
