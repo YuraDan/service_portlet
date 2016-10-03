@@ -45,10 +45,16 @@ public class UtilController extends Controller {
 
 	@RequestMapping(value = "/Services/getPortraitImage", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity getPortraitImage(@RequestParam("userId") long userId, @RequestParam("imagePath") String imagePath, HttpSession httpSession, HttpServletRequest httpRequest, HttpServletResponse response) {
+	public ResponseEntity getPortraitImage(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "imagePath", required = false) String imagePath, HttpSession httpSession, HttpServletRequest httpRequest) {
+		String defaultUrlString = String.join("", "http://", httpRequest.getLocalAddr(), ":", String.valueOf(httpRequest.getLocalPort()), "/", "image/user_male_portrait?img_id=0");
+		String urlString;
 		try {
-			User user = UserLocalServiceUtil.getUserById(userId);
-			String urlString = String.join("", "http://", httpRequest.getLocalAddr(), ":", String.valueOf(httpRequest.getLocalPort()), "/", UserConstants.getPortraitURL(imagePath, user.getMale(), user.getPortraitId()));
+			if (userId == null || imagePath == null) {
+				urlString = defaultUrlString;
+			} else {
+				User user = UserLocalServiceUtil.getUserById(userId);
+				urlString = user.isDefaultUser() || user == null ? defaultUrlString : String.join("", "http://", httpRequest.getLocalAddr(), ":", String.valueOf(httpRequest.getLocalPort()), "/", UserConstants.getPortraitURL(imagePath, user.getMale(), user.getPortraitId()));
+			}
 			URL url = new URL(urlString);
 			InputStream is = url.openStream();
 			BufferedImage img = ImageIO.read(is);
