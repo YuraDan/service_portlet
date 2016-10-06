@@ -1,5 +1,7 @@
 package ru.gradis.sovzond.model.dao;
 
+import org.springframework.dao.DataAccessException;
+
 /**
  * Created by donchenko-y on 7/13/16.
  */
@@ -7,6 +9,6 @@ package ru.gradis.sovzond.model.dao;
 
 public interface ConfigDAO {
 
-	public String getConfig(String param);
+	public String getConfig(String param) throws DataAccessException;
 
 }

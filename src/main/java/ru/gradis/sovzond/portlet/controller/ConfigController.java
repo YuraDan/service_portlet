@@ -3,12 +3,14 @@ package ru.gradis.sovzond.portlet.controller;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.gradis.sovzond.model.dao.ConfigDAO;
 import ru.gradis.sovzond.util.CommonUtil;
 import ru.gradis.sovzond.util.ParamMap;
+import ru.gradis.sovzond.util.exception.DataException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,7 +41,11 @@ public class ConfigController extends Controller {
 		String json = "";
 		if (params.getString("param") == null)
 			return (T) CommonUtil.getBadResponseFromString("Заданы не все параметры!");
-		json = (String) configDAO.getConfig(params.getString("param"));
+		try {
+			json = (String) configDAO.getConfig(params.getString("param"));
+		} catch (DataAccessException e) {
+			throw new DataException(e);
+		}
 		return (T) json;
 	}
 }

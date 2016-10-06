@@ -1,7 +1,6 @@
 package ru.gradis.sovzond.model.dao.impl;
 
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -17,7 +16,6 @@ import java.util.Map;
  */
 
 public class CRUDServiceDAOImpl implements CRUDServiceDAO {
-	private static final Log log = LogFactoryUtil.getLog(CRUDServiceDAOImpl.class);
 
 	private DataSource dataSource;
 
@@ -26,16 +24,11 @@ public class CRUDServiceDAOImpl implements CRUDServiceDAO {
 	}
 
 	@Override
-	public Map<String, Object> executeDataAction(Action action, String param) {
-
+	public Map<String, Object> executeDataAction(Action action, String param) throws DataAccessException {
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
 		inParamMap.put("i_params", param);
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
-
-		Map<String, Object> simpleJdbcCallResult = getJdbcCallByAction(action).execute(in);
-		log.info(simpleJdbcCallResult);
-
-		return simpleJdbcCallResult;
+		return getJdbcCallByAction(action).execute(in);
 	}
 
 	private SimpleJdbcCall getJdbcCallByAction(Action action) {

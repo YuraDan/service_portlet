@@ -10,40 +10,33 @@ import com.liferay.util.Encryptor;
 import com.liferay.util.EncryptorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import ru.gradis.sovzond.util.CommonUtil;
+import ru.gradis.sovzond.util.ErrorToResponse;
 import ru.gradis.sovzond.util.ParamMap;
+import ru.gradis.sovzond.util.exception.DataException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Cookie;
 import java.security.Key;
+import java.sql.SQLException;
 
 /**
  * Created by donchenko-y on 15.09.16.
  */
 
+@ControllerAdvice
 public abstract class Controller {
 
 	private static final Log log = LogFactoryUtil.getLog(Controller.class);
 
 	ResponseEntity<String> stringResponseEntity;
 
-	private ResponseEntity verifyUserLogon(HttpSession httpSession) {
-		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("ID"));
-		if (httpSession.getAttribute("ID") == null ? true : false) {
-			return new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
-		}
-		return new ResponseEntity<String>("login", HttpStatus.OK);
-	}
-
-	private void verifyUserLogon2(HttpSession httpSession) {
-		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("USER_UUID"));
-		if (httpSession.getAttribute("USER_UUID") == null ? true : false) {
-			stringResponseEntity = new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
-		} else stringResponseEntity = new ResponseEntity<String>("login", HttpStatus.OK);
-	}
-
-	public ResponseEntity verifyUserLogon(HttpServletRequest req, HttpSession httpSession) {
+	private ResponseEntity verifyUserLogon(HttpServletRequest req, HttpSession httpSession) {
 		ResponseEntity errorLogin = new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
 		Cookie[] cookies = req.getCookies();
 		String userId = null, password = null, companyId = null, uuid = null, rememberMe = "false";
@@ -53,14 +46,14 @@ public abstract class Controller {
 			userId = c.getName().equals("ID") ? CommonUtil.hexStringToStringByAscii(c.getValue()) : userId;
 			rememberMe = c.getName().equals("REMEMBER_ME") ? c.getValue() : rememberMe;
 		}
-		System.out.println("sessionUserId = " + sessionUserId);
+//		System.out.println("sessionUserId = " + sessionUserId);
 		if (userId == null || companyId == null) return errorLogin;
 		if (rememberMe.equals("false") && sessionUserId == null) return errorLogin;
 		try {
 			Company company = CompanyLocalServiceUtil.getCompany(Long.valueOf(companyId));
 			Key key = company.getKeyObj();
 			String userDecrypt = Encryptor.decrypt(key, userId);
-			System.out.println("userDecrypt = " + userDecrypt);
+//			System.out.println("userDecrypt = " + userDecrypt);
 			if (rememberMe.equals("true") && userDecrypt.length() > 1) {
 				return new ResponseEntity<String>(userDecrypt, HttpStatus.OK);
 			}
@@ -72,7 +65,6 @@ public abstract class Controller {
 		}
 		return new ResponseEntity<String>("User check Error! No cookies...", HttpStatus.SERVICE_UNAVAILABLE);
 	}
-
 
 	public <T> ResponseEntity getResponse(HttpServletRequest request, HttpSession httpSession, ParamMap paramMap) {
 		T answer = null;
@@ -87,5 +79,38 @@ public abstract class Controller {
 	}
 
 	protected abstract <T> T process(ParamMap params);
+
+	@ExceptionHandler(DataException.class)
+	@ResponseBody
+	public ResponseEntity<String> handleException(DataException e, HttpServletResponse response) {
+		log.error(e);
+		response.setContentType("application/json;charset=UTF-8");
+		response.setHeader("Content-Type", "application/json; charset=utf-8");
+		response.setCharacterEncoding("UTF-8");
+		if (e.getRootCause() instanceof SQLException) {
+			SQLException s = (SQLException) e.getRootCause();
+			return CommonUtil.getErrorResponse(ErrorToResponse.getJsonSqlError(s.getMessage(), s.getSQLState()));
+		} else {
+			log.error(e);
+			return CommonUtil.getErrorResponse(ErrorToResponse.getJsonError(e.getMessage()));
+		}
+	}
+
+//TODO: Delete
+//	private ResponseEntity verifyUserLogon(HttpSession httpSession) {
+//		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("ID"));
+//		if (httpSession.getAttribute("ID") == null ? true : false) {
+//			return new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
+//		}
+//		return new ResponseEntity<String>("login", HttpStatus.OK);
+//	}
+//
+//	private void verifyUserLogon2(HttpSession httpSession) {
+//		System.out.println("**GET_USER_PRIXY_UUID**: " + httpSession.getAttribute("USER_UUID"));
+//		if (httpSession.getAttribute("USER_UUID") == null ? true : false) {
+//			stringResponseEntity = new ResponseEntity<String>("Access is denied. The user is logged out!", HttpStatus.SERVICE_UNAVAILABLE);
+//		} else stringResponseEntity = new ResponseEntity<String>("login", HttpStatus.OK);
+//	}
+
 
 }

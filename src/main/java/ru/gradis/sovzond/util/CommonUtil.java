@@ -56,6 +56,11 @@ public class CommonUtil {
 		return new ResponseEntity<String>(str, HttpStatus.BAD_REQUEST);
 	}
 
+	public static ResponseEntity<String> getErrorResponse(String err) {
+		return new ResponseEntity<String>(err, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+
 	public static String hexStringToStringByAscii(String hexString) {
 		byte[] bytes = new byte[hexString.length() / 2];
 		for (int i = 0; i < hexString.length() / 2; i++) {

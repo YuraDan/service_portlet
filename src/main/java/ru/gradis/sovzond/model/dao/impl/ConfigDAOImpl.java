@@ -2,6 +2,7 @@ package ru.gradis.sovzond.model.dao.impl;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -34,14 +35,13 @@ public class ConfigDAOImpl implements ConfigDAO {
 	}
 
 	@Override
-	public String getConfig(String param) {
+	public String getConfig(String param) throws DataAccessException {
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
 		inParamMap.put("i_params", param);
 		MapSqlParameterSource in = new MapSqlParameterSource().addValues(inParamMap);
 		Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
 		log.info(simpleJdbcCallResult);
-		String result = simpleJdbcCallResult.get("r_json").toString();
-		return result;
+		return simpleJdbcCallResult.get("r_json").toString();
 	}
 
 }

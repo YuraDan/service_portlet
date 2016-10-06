@@ -3,12 +3,14 @@ package ru.gradis.sovzond.portlet.controller;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
 import ru.gradis.sovzond.util.CommonUtil;
 import ru.gradis.sovzond.util.ParamMap;
+import ru.gradis.sovzond.util.exception.DataException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -73,7 +75,12 @@ public class CRUDController extends Controller {
 	@Override
 	protected <T> T process(ParamMap params) {
 		if (params.getString("param") != null) {
-			return (T) crudServiceDAO.executeDataAction(params.get("action", CRUDServiceDAO.Action.class), params.getString("param")).get("r_json").toString();
+			try {
+				return (T) crudServiceDAO.executeDataAction(params.get("action", CRUDServiceDAO.Action.class), params.getString("param")).get("r_json").toString();
+			} catch (DataAccessException e) {
+				throw new DataException(e);
+			}
+
 		}
 		return (T) CommonUtil.getBadResponseFromString("Требуется передать param-json!");
 	}

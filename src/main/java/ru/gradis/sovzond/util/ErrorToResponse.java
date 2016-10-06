@@ -10,7 +10,12 @@ public class ErrorToResponse {
 
 	//--- Сообщение об ошибке в формате JSON ---
 	public static String getJsonError(String message) {
-		return "{\"message\":\"" + message.replace("\"", "\\\"") + "\"}";
+		return String.join("", "{\"message\":\"", message.replace("\"", "\\\""), "\"}");
+//		return "{\"message\":\"" + message.replace("\"", "\\\"") + "\"}";
+	}
+
+	public static String getJsonSqlError(String message, String code) {
+		return String.join("", "{\"error\":\"", message.replace("\"", "\\\""), "\", \"code\":\"", code, "\"}");
 	}
 
 	//--- Сообщение об ошибке в формате HTML ---
