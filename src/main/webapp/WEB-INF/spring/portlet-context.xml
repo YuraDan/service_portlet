@@ -18,7 +18,7 @@
 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 
-	<context:component-scan base-package="ru.gradis.sovzond.portlet.controller"/>
+	<context:component-scan base-package="ru.gradis.sovzond.portlet"/>
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<!--<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
