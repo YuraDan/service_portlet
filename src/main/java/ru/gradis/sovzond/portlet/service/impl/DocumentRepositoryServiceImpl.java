@@ -21,6 +21,7 @@ import ru.gradis.sovzond.model.dao.CRUDServiceDAO;
 import ru.gradis.sovzond.model.dao.FileRepositoryDAO;
 import ru.gradis.sovzond.portlet.service.DocumentRepositoryService;
 import ru.gradis.sovzond.util.JsonBuilder;
+import ru.gradis.sovzond.util.xls.XlsToCsvConverter;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,16 +48,13 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 		String fileUrl, insertResult = "UNDEF";
 		byte[] bytesOfFile = mFile.getBytes();
 		File file = multipartToFile(mFile);
-
 		String mimeType = MimeTypesUtil.getContentType(file);
 		String title = file.getName();
 		fileName = fileName != null ? fileName : file.getName();
-
 		//save file to repository
 		FileEntry addedFile = DLAppLocalServiceUtil.addFileEntry(userId, repositoryId, folderId, fileName, mimeType,
 				title, "description", "changeLog", file, getServiceContext()
 		);
-
 		fileUrl = getfileUrlByTitle(groupId, folderId, title);
 		JSONObject jsonParam = JsonBuilder.getJsonFromString(param);
 		jsonParam.put("_config_dataset", "dsPage");
@@ -67,6 +65,9 @@ public class DocumentRepositoryServiceImpl implements DocumentRepositoryService 
 		//parsing if xml extension
 		if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xml") || FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("csv")) {
 			fileRepositoryDAO.databaseXmlParsing(bytesOfFile, insertResult);
+		}
+		if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xls") || FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xlsx")) {
+			fileRepositoryDAO.databaseXmlParsing(XlsToCsvConverter.convertToCsv(bytesOfFile, FilenameUtils.getExtension(file.getName())), insertResult);
 		}
 		return fileUrl;
 	}
